@@ -10,11 +10,12 @@
 #import "YelpClient.h"
 #import "CustomTableViewCell.h"
 #import "AFNetworking.h"
-//#import <SDWebImage/UIImageView+WebCache.h>
-#import "JSONModelLib.h"
-#import "BusinessModel.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 static NSString *CellIdentifier = @"CustomTableViewCell";
+static int CustomTableViewCellHeight=103;
+static int NameLabelFontSize=17;
+static int NameLabelWidth=182;
 
 NSString * const kYelpConsumerKey = @"vxKwwcR_NMQ7WaEiQBK_CA";
 NSString * const kYelpConsumerSecret = @"33QCvh5bIF5jIHR5klQr7RtBDhQ";
@@ -26,7 +27,6 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 @property (nonatomic, strong) YelpClient *client;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic,strong) UISearchDisplayController *searchController;
-@property (nonatomic,strong) YelpModel *yelpModel;
 @property (nonatomic,strong) NSArray *businessesList;
 @property (nonatomic,strong) NSMutableDictionary *offscreenCells;
 
@@ -46,40 +46,10 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
            // NSLog(@"response: %@", response);
             [self.tableView reloadData];
             
-            
-//            NSError *e = nil;
-//            NSArray *jsonArray = [NSJSONSerialization JSONObjectWithData: response options: NSJSONReadingMutableContainers error: &e];
-//            if (!jsonArray) {
-//                NSLog(@"Error parsing JSON: %@", e);
-//            } else {
-//                for(NSDictionary *item in jsonArray) {
-//                    NSLog(@"Item: %@", item);
-//                }
-//            }
-
-//            NSError *initError=[[NSError alloc] init];
-//            self.yelpModel=[self.yelpModel initWithDictionary:response error:&initError];
-//            NSLog(@"json fetched: %@", self.yelpModel.businesses);
-//            //NSLog(@"initError: %@", [initError description]);
-            
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"error: %@", [error description]);
         }];
     }
-    
-//    //fetch the feed
-//    self.yelpModel = [[YelpModel alloc] initFromURLWithString:@"http://api.kivaws.org/v1/loans/search.json?status=fundraising"
-//                                         completion:^(JSONModel *model, JSONModelError *err) {
-//                                             
-//                                             //hide the loader view
-//                                             [HUD hideUIBlockingIndicator];
-//                                             
-//                                             //json fetched
-//                                             NSLog(@"loans: %@", _feed.loans);
-//                                             
-//                                         }];
-//}
-
     return self;
 }
 
@@ -129,45 +99,28 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //return 126;
-//    
-//    CustomTableViewCell *cell = [self.offscreenCells objectForKey:CellIdentifier];
-//    if (!cell) {
-//        cell = [[CustomTableViewCell alloc] init];
-//        [self.offscreenCells setObject:cell forKey:CellIdentifier];
-//    }
-//    
-//    NSDictionary *business=self.businessesList[indexPath.row];
-//    cell.Name.text = [NSString stringWithFormat:@"%@",[business objectForKey:@"name"]];
-//    
-//    [cell setNeedsUpdateConstraints];
-//    [cell updateConstraintsIfNeeded];
-//    
-//    // Set the width of the cell to match the width of the table view. This is important so that we'll get the
-//    // correct cell height for different table view widths if the cell's height depends on its width (due to
-//    // multi-line UILabels word wrapping, etc). We don't need to do this above in -[tableView:cellForRowAtIndexPath]
-//    // because it happens automatically when the cell is used in the table view.
-//    // Also note, the final width of the cell may not be the width of the table view in some cases, for example when a
-//    // section index is displayed along the right side of the table view. You must account for the reduced cell width.
-//    cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(tableView.bounds), CGRectGetHeight(cell.bounds));
-//    NSLog(@"cell bounds w h: %f %f",cell.bounds.size.width,cell.bounds.size.height);
-//    // Do the layout pass on the cell, which will calculate the frames for all the views based on the constraints.
-//    // (Note that you must set the preferredMaxLayoutWidth on multi-line UILabels inside the -[layoutSubviews] method
-//    // of the UITableViewCell subclass, or do it manually at this point before the below 2 lines!)
-//    [cell setNeedsLayout];
-//    [cell layoutIfNeeded];
-//    
-//    // Get the actual height required for the cell's contentView
-//    CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-//    
-//    // Add an extra point to the height to account for the cell separator, which is added between the bottom
-//    // of the cell's contentView and the bottom of the table view cell.
-//    height += 1.0f;
-//  return height;
+    CustomTableViewCell *cell = [[CustomTableViewCell alloc] init];
     NSDictionary *business=self.businessesList[indexPath.row];
     NSString* name=[NSString stringWithFormat:@"%@",[business objectForKey:@"name"]];
-    NSLog(@"---- movie: %@",name);
-    UIFont *font = [UIFont boldSystemFontOfSize: 28];
+    [cell.Name setLineBreakMode:NSLineBreakByWordWrapping];
+    [cell.Name setNumberOfLines:0];
+    cell.Name.text = name;
+    UIFont *font = [UIFont boldSystemFontOfSize: NameLabelFontSize];
+    NSDictionary *attributes = @{NSFontAttributeName: font};
+    
+    CGRect rect = [name boundingRectWithSize:CGSizeMake(NameLabelWidth, MAXFLOAT)
+                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                  attributes:attributes
+                                     context:nil];
+    CGSize size=rect.size;
+    //cell.Name.frame = CGRectMake(0, 0, size.width, size.height);
+    
+    NSLog(@"----%@ height: %f",name,size.height);
+    [cell.Name sizeToFit];
+    
+    /* NSDictionary *business=self.businessesList[indexPath.row];
+    NSString* name=[NSString stringWithFormat:@"%@",[business objectForKey:@"name"]];
+    UIFont *font = [UIFont boldSystemFontOfSize: NameLabelFontSize];
     NSDictionary *attributes = @{NSFontAttributeName: font};
     CGRect rect = [name boundingRectWithSize:CGSizeMake(320, MAXFLOAT)
                                      options:NSStringDrawingUsesLineFragmentOrigin
@@ -175,9 +128,10 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
                                      context:nil];
     CGSize size= rect.size;
 //    CGSize size = [name sizeWithAttributes:attributes];
-    NSLog(@"---- height: %f",size.height);
-    NSLog(@"---- returning height: %f",size.height+126);
-    return size.height+126;
+    NSLog(@"---- %@ height: %f",name,size.height);
+    NSLog(@"---- returning height: %f",size.height+CustomTableViewCellHeight);
+    */
+    return size.height+CustomTableViewCellHeight;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -204,21 +158,22 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     [cell.Name setNumberOfLines:0];
     cell.Name.text = name;
     cell.Reviews.text = [NSString stringWithFormat:@"%@",[business objectForKey:@"phone"]];
-    //[cell.Image setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",[business objectForKey:@"phone"]]] placeholderImage:[UIImage imageNamed:@"noImage.png"]];
+    [cell.Image setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",[business objectForKey:@"image_url"]]] placeholderImage:[UIImage imageNamed:@"noImage.png"]];
     //NSLog(@"--movie: %@",cell.Name.text);
-    UIFont *font = [UIFont boldSystemFontOfSize: 28];
+    UIFont *font = [UIFont boldSystemFontOfSize: NameLabelFontSize];
     NSDictionary *attributes = @{NSFontAttributeName: font};
 
+    NSLog(@"--%@ width: %f const: %d",name,cell.Name.bounds.size.width,NameLabelWidth);
 
-    CGRect rect = [name boundingRectWithSize:CGSizeMake(cell.Name.bounds.size.width, MAXFLOAT)
+    CGRect rect = [name boundingRectWithSize:CGSizeMake(NameLabelWidth, MAXFLOAT)
                                               options:NSStringDrawingUsesLineFragmentOrigin
                                            attributes:attributes
                                               context:nil];
     CGSize size=rect.size;
     //CGSize size = [name sizeWithAttributes:attributes];
-    cell.Name.frame = CGRectMake(0, 0, size.width, size.height);
+    //cell.Name.frame = CGRectMake(0, 0, size.width, size.height);
 
-    //NSLog(@"--height: %f",size.height);
+    NSLog(@"--%@ height: %f",name,size.height);
     [cell.Name sizeToFit];
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
