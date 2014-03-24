@@ -11,7 +11,6 @@
 #import "CustomTableViewCell.h"
 #import "AFNetworking.h"
 #import <SDWebImage/UIImageView+WebCache.h>
-#import "FiltersViewController.h"
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
@@ -43,15 +42,8 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     if (self) {
         // You can register for Yelp API keys here: http://www.yelp.com/developers/manage_api_keys
         self.client = [[YelpClient alloc] initWithConsumerKey:kYelpConsumerKey consumerSecret:kYelpConsumerSecret accessToken:kYelpToken accessSecret:kYelpTokenSecret];
+        [self searchYelpWithString:@"Thai"];
         
-        [self.client searchWithTerm:@"Thai" success:^(AFHTTPRequestOperation *operation, id response) {
-            self.businessesList=[response objectForKey:@"businesses"];
-           // NSLog(@"response: %@", response);
-            [self.tableView reloadData];
-            
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"error: %@", [error description]);
-        }];
     }
     return self;
 }
@@ -63,26 +55,23 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Filter" style:UIBarButtonItemStylePlain target:self action:@selector(onFilterButton:)];
     
-    self.offscreenCells = [[NSMutableDictionary alloc] init];
-    
-    UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-5.0, 0.0, 320.0, 44.0)];
+    UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(40.0, 0.0, 280.0, 44.0)];
     searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 310.0, 44.0)];
+    searchBar.barTintColor = [UIColor redColor];
+    
+    UIButton *filterButton=[[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 44)];
+    [filterButton addTarget:self action:@selector(onFilterButton:) forControlEvents:UIControlEventTouchUpInside];
+    [filterButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [filterButton setTitle:@"Filter" forState:UIControlStateNormal];
+    filterButton.backgroundColor=[UIColor redColor];
+    
+    UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
     searchBarView.autoresizingMask = 0;
     searchBar.delegate = self;
+    [searchBarView addSubview:filterButton];
     [searchBarView addSubview:searchBar];
-    searchBarView.backgroundColor=[UIColor redColor];
     self.navigationItem.titleView = searchBarView;
-    
-    /*self.searchController = [[UISearchDisplayController alloc]
-                        initWithSearchBar:searchBar contentsController:self];
-    self.searchController.delegate = self;
-    self.searchController.searchResultsDataSource = self;
-    self.searchController.searchResultsDelegate = self;
-    self.searchDisplayController.displaysSearchBarInNavigationBar=YES; */
-    self.title=@"Yelp";
     
     UINib *customCellNib= [UINib nibWithNibName:CellIdentifier bundle:nil];
     [self.tableView registerNib:customCellNib forCellReuseIdentifier:CellIdentifier];
@@ -221,7 +210,47 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 
 - (IBAction)onFilterButton:(id)sender {
     FiltersViewController *filtersView=[[FiltersViewController alloc] init];
+    filtersView.delegate=self;
     [self.navigationController pushViewController:filtersView animated:YES];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+    // Do the search...
+    if(searchBar.text.length>0) {
+        [self searchYelpWithString:searchBar.text];
+    }
+}
+
+
+-(void)searchYelpWithString:(NSString *)text {
+    [self.client searchWithTerm:text success:^(AFHTTPRequestOperation *operation, id response) {
+        self.businessesList=[response objectForKey:@"businesses"];
+        // NSLog(@"response: %@", response);
+        [self.tableView reloadData];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"error: %@", [error description]);
+    }];
+}
+
+#pragma mark - FiltersViewControllerDelegate
+
+- (void)setDealsInSearch:(BOOL)onOff {
+    
+}
+
+- (void)sortByInSearch:(NSString *)sortBy {
+    
+}
+
+- (void)distanceInSearch:(NSString *)distance {
+    
+}
+
+- (void)categoriesInSearch:(NSString *)categories {
+    
 }
 
 @end
