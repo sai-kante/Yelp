@@ -27,8 +27,6 @@
 		ECB2549618DE579000C4011D /* CustomTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ECB2549418DE579000C4011D /* CustomTableViewCell.xib */; };
 		ECB254C418DEB93700C4011D /* FiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ECB254C218DEB93700C4011D /* FiltersViewController.m */; };
 		ECB254C518DEB93700C4011D /* FiltersViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = ECB254C318DEB93700C4011D /* FiltersViewController.xib */; };
-		ECB254EC18DED3E300C4011D /* ExpandableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ECB254EB18DED3E300C4011D /* ExpandableTableViewCell.m */; };
-		ECB254EE18DED45800C4011D /* data.plist in Resources */ = {isa = PBXBuildFile; fileRef = ECB254ED18DED45800C4011D /* data.plist */; };
 		ECB254F218DFDA8700C4011D /* FilterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = ECB254F018DFDA8700C4011D /* FilterTableViewCell.m */; };
 		ECB254F318DFDA8700C4011D /* FilterTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ECB254F118DFDA8700C4011D /* FilterTableViewCell.xib */; };
 /* End PBXBuildFile section */
@@ -73,9 +71,6 @@
 		ECB254C118DEB93700C4011D /* FiltersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FiltersViewController.h; sourceTree = "<group>"; };
 		ECB254C218DEB93700C4011D /* FiltersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FiltersViewController.m; sourceTree = "<group>"; };
 		ECB254C318DEB93700C4011D /* FiltersViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FiltersViewController.xib; sourceTree = "<group>"; };
-		ECB254EA18DED3E300C4011D /* ExpandableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpandableTableViewCell.h; sourceTree = "<group>"; };
-		ECB254EB18DED3E300C4011D /* ExpandableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpandableTableViewCell.m; sourceTree = "<group>"; };
-		ECB254ED18DED45800C4011D /* data.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = data.plist; sourceTree = "<group>"; };
 		ECB254EF18DFDA8700C4011D /* FilterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FilterTableViewCell.h; sourceTree = "<group>"; };
 		ECB254F018DFDA8700C4011D /* FilterTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FilterTableViewCell.m; sourceTree = "<group>"; };
 		ECB254F118DFDA8700C4011D /* FilterTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FilterTableViewCell.xib; sourceTree = "<group>"; };
@@ -118,9 +113,6 @@
 		420474F718DC2A9200E88E07 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				ECB254ED18DED45800C4011D /* data.plist */,
-				ECB254EA18DED3E300C4011D /* ExpandableTableViewCell.h */,
-				ECB254EB18DED3E300C4011D /* ExpandableTableViewCell.m */,
 				420474F818DC2B2100E88E07 /* MainViewController.h */,
 				420474F918DC2B2100E88E07 /* MainViewController.m */,
 				420474FA18DC2B2100E88E07 /* MainViewController.xib */,
@@ -288,7 +280,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ECB254EE18DED45800C4011D /* data.plist in Resources */,
 				ECB254F318DFDA8700C4011D /* FilterTableViewCell.xib in Resources */,
 				42FD6C5518DC286B000BF2B9 /* InfoPlist.strings in Resources */,
 				420474FC18DC2B2100E88E07 /* MainViewController.xib in Resources */,
@@ -349,7 +340,6 @@
 				42FD6C5B18DC286B000BF2B9 /* AppDelegate.m in Sources */,
 				ECB254F218DFDA8700C4011D /* FilterTableViewCell.m in Sources */,
 				42FD6C5718DC286B000BF2B9 /* main.m in Sources */,
-				ECB254EC18DED3E300C4011D /* ExpandableTableViewCell.m in Sources */,
 				420474F618DC299500E88E07 /* YelpClient.m in Sources */,
 				ECB254C418DEB93700C4011D /* FiltersViewController.m in Sources */,
 				ECB2549518DE579000C4011D /* CustomTableViewCell.m in Sources */,

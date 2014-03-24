@@ -14,5 +14,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *Reviews;
 @property (weak, nonatomic) IBOutlet UILabel *Address;
 @property (weak, nonatomic) IBOutlet UILabel *Type;
+@property (weak, nonatomic) IBOutlet UIImageView *ReviewsImage;
 
 @end

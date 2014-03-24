@@ -11,6 +11,9 @@
 #import "CustomTableViewCell.h"
 #import "AFNetworking.h"
 #import <SDWebImage/UIImageView+WebCache.h>
+#import "FiltersViewController.h"
+
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
 static NSString *CellIdentifier = @"CustomTableViewCell";
 static int CustomTableViewCellHeight=103;
@@ -57,6 +60,11 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
+        self.edgesForExtendedLayout = UIRectEdgeNone;
+    }
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Filter" style:UIBarButtonItemStylePlain target:self action:@selector(onFilterButton:)];
+    
     self.offscreenCells = [[NSMutableDictionary alloc] init];
     
     UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(-5.0, 0.0, 320.0, 44.0)];
@@ -65,6 +73,7 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     searchBarView.autoresizingMask = 0;
     searchBar.delegate = self;
     [searchBarView addSubview:searchBar];
+    searchBarView.backgroundColor=[UIColor redColor];
     self.navigationItem.titleView = searchBarView;
     
     /*self.searchController = [[UISearchDisplayController alloc]
@@ -157,13 +166,39 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     [cell.Name setLineBreakMode:NSLineBreakByWordWrapping];
     [cell.Name setNumberOfLines:0];
     cell.Name.text = name;
-    cell.Reviews.text = [NSString stringWithFormat:@"%@",[business objectForKey:@"phone"]];
+    cell.Reviews.text = [NSString stringWithFormat:@"%@ Reviews",[business objectForKey:@"review_count"]];
     [cell.Image setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",[business objectForKey:@"image_url"]]] placeholderImage:[UIImage imageNamed:@"noImage.png"]];
+    [cell.ReviewsImage setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",[business objectForKey:@"rating_img_url_small"]]] placeholderImage:[UIImage imageNamed:@"noImage.png"]];
+    
+    
+    NSDictionary *location=[business objectForKey:@"location"];
+    NSArray *address=[[NSArray alloc] init];
+    if(location) {
+        address=[location objectForKey:@"display_address"];
+    }
+    if(address) {
+        cell.Address.text=address[0];
+    }
+    else {
+        cell.Address.text=@"Not Available";
+    }
+    
+    NSArray *categories=[business objectForKey:@"categories"];
+    NSString *categoryList=@"";
+    for (NSArray *eachCategory in categories) {
+        categoryList = [categoryList stringByAppendingFormat:@"%@, ", eachCategory[0]];
+    }
+    if ([categoryList length] > 0) {
+        categoryList = [categoryList substringToIndex:[categoryList length] - 2];
+    }
+    cell.Type.text=categoryList;
+    
+    
     //NSLog(@"--movie: %@",cell.Name.text);
     UIFont *font = [UIFont boldSystemFontOfSize: NameLabelFontSize];
     NSDictionary *attributes = @{NSFontAttributeName: font};
 
-    NSLog(@"--%@ width: %f const: %d",name,cell.Name.bounds.size.width,NameLabelWidth);
+    //NSLog(@"--%@ width: %f const: %d",name,cell.Name.bounds.size.width,NameLabelWidth);
 
     CGRect rect = [name boundingRectWithSize:CGSizeMake(NameLabelWidth, MAXFLOAT)
                                               options:NSStringDrawingUsesLineFragmentOrigin
@@ -182,6 +217,11 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
+}
+
+- (IBAction)onFilterButton:(id)sender {
+    FiltersViewController *filtersView=[[FiltersViewController alloc] init];
+    [self.navigationController pushViewController:filtersView animated:YES];
 }
 
 @end

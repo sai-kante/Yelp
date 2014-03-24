@@ -8,7 +8,7 @@
 
 #import "AppDelegate.h"
 #import "MainViewController.h"
-#import "FiltersViewController.h"
+//#import "FiltersViewController.h"
 
 @implementation AppDelegate
 
@@ -16,9 +16,9 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
-    //MainViewController *myVc= [[MainViewController alloc] init];
-    FiltersViewController *fVc=[[FiltersViewController alloc] init];
-    UINavigationController *uvc = [[UINavigationController alloc] initWithRootViewController:fVc];
+    MainViewController *myVc= [[MainViewController alloc] init];
+    //FiltersViewController *fVc=[[FiltersViewController alloc] init];
+    UINavigationController *uvc = [[UINavigationController alloc] initWithRootViewController:myVc];
     self.window.rootViewController = uvc;
 
     self.window.backgroundColor = [UIColor whiteColor];
