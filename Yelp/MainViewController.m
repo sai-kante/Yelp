@@ -35,6 +35,7 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 @property (nonatomic,strong) NSMutableDictionary *optionsChosen;
 @property (nonatomic,assign) BOOL searchWithFilters;
 @property (nonatomic,strong) NSMutableDictionary *categoriesYelpKeys;
+@property (nonatomic,strong) NSMutableDictionary *sortByYelpKeys;
 
 @end
 
@@ -97,8 +98,6 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     self.optionsChosen[@"Categories"]=@"";
     
     self.categoriesYelpKeys=[[NSMutableDictionary alloc] init];
-    //@"Indian",@"Italian", @"Japanese",@"Korean",@"Mexican",
-    //@"Pizza",@"Thai", @"Seafood",@"Sushi Bars",@"Greek",nil];
     self.categoriesYelpKeys[@"Indian"]=@"indpak";
     self.categoriesYelpKeys[@"Italian"]=@"italian";
     self.categoriesYelpKeys[@"Japanese"]=@"japanese";
@@ -109,6 +108,12 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     self.categoriesYelpKeys[@"Sushi Bars"]=@"sushi";
     self.categoriesYelpKeys[@"Greek"]=@"indpak";
     self.categoriesYelpKeys[@"Mexican"]=@"mexican";
+    
+    self.sortByYelpKeys=[[NSMutableDictionary alloc] init];
+    self.sortByYelpKeys[@"best match"]=@0;
+    self.sortByYelpKeys[@"distance"]=@1;
+    self.sortByYelpKeys[@"highest rated"]=@2;
+    
     
 }
 
@@ -294,7 +299,7 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 
 - (void)searchUsingFilters {
     NSString *dealsChosen=[self.optionsChosen[@"Deals"] isEqualToString:@"off"] ? @"false": @"true";
-    [self.client searchWithTerm:@"Restaurant" withDeals:dealsChosen sortBy:self.optionsChosen[@"SortBy"]
+    [self.client searchWithTerm:@"Restaurant" withDeals:dealsChosen sortBy:self.sortByYelpKeys[self.optionsChosen[@"SortBy"]]
                                               inRadius:[self.optionsChosen[@"Distance"] intValue] inCategory:self.categoriesYelpKeys[ self.optionsChosen[@"Categories"]] success:^(AFHTTPRequestOperation *operation, id response) {
                                                   self.businessesList=[response objectForKey:@"businesses"];
            [self.tableView reloadData];
