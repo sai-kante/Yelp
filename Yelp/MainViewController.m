@@ -31,6 +31,8 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 @property (nonatomic,strong) UISearchDisplayController *searchController;
 @property (nonatomic,strong) NSArray *businessesList;
 @property (nonatomic,strong) UISearchBar *searchBar;
+@property (nonatomic,strong) FiltersViewController *filtersView;
+@property (nonatomic,strong) NSMutableDictionary *optionsChosen;
 
 @end
 
@@ -42,7 +44,7 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     if (self) {
         // You can register for Yelp API keys here: http://www.yelp.com/developers/manage_api_keys
         self.client = [[YelpClient alloc] initWithConsumerKey:kYelpConsumerKey consumerSecret:kYelpConsumerSecret accessToken:kYelpToken accessSecret:kYelpTokenSecret];
-        [self searchYelpWithString:@"Thai"];
+        [self searchYelpWithString:@"Restaurant"];
         
     }
     return self;
@@ -81,6 +83,17 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     self.tableView.dataSource=self;
     self.tableView.autoresizesSubviews=false;
     self.tableView.delegate = self;
+    
+    //set the filters view controller
+    self.filtersView=[[FiltersViewController alloc] init];
+    self.filtersView.delegate=self;
+    
+    self.optionsChosen= [[NSMutableDictionary alloc] init];
+    self.optionsChosen[@"Deals"]=@"off";
+    self.optionsChosen[@"SortBy"]=@"";
+    self.optionsChosen[@"Distance"]=@"";
+    self.optionsChosen[@"Categories"]=@"";
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -208,9 +221,11 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 }
 
 - (IBAction)onFilterButton:(id)sender {
-    FiltersViewController *filtersView=[[FiltersViewController alloc] init];
-    filtersView.delegate=self;
-    [self.navigationController pushViewController:filtersView animated:YES];
+    self.filtersView.optionsChosen[@"Deals"]=self.optionsChosen[@"Deals"];
+    self.filtersView.optionsChosen[@"SortBy"]=self.optionsChosen[@"SortBy"];
+    self.filtersView.optionsChosen[@"Distance"]=self.optionsChosen[@"Distance"];
+    self.filtersView.optionsChosen[@"Categories"]=self.optionsChosen[@"Categories"];
+    [self.navigationController pushViewController:self.filtersView animated:YES];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -245,20 +260,32 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 
 #pragma mark - FiltersViewControllerDelegate
 
-- (void)setDealsInSearch:(BOOL)onOff {
-    
+- (void)setDealsInSearch:(NSString* )onOff {
+    self.optionsChosen[@"Deals"]=onOff;
 }
 
 - (void)sortByInSearch:(NSString *)sortBy {
-    
+    self.optionsChosen[@"SortBy"]=sortBy;
 }
 
 - (void)distanceInSearch:(NSString *)distance {
-    
+    self.optionsChosen[@"Distance"]=distance;
 }
 
 - (void)categoriesInSearch:(NSString *)categories {
-    
+    self.optionsChosen[@"Categories"]=categories;
+}
+
+- (void)searchUsingFilters {
+    NSString *dealsChosen=[self.optionsChosen[@"Deals"] isEqualToString:@"off"] ? @"false": @"true";
+    [self.client searchWithTerm:@"Restaurant" withDeals:dealsChosen sortBy:self.optionsChosen[@"SortBy"]
+                                              inRadius:[self.optionsChosen[@"Distance"] intValue] inCategory:@"" success:^(AFHTTPRequestOperation *operation, id response) {
+                                                  self.businessesList=[response objectForKey:@"businesses"];
+        [self.tableView reloadData];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"error: %@", [error description]);
+    }];
 }
 
 @end

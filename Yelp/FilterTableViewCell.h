@@ -8,7 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol FilterTableViewCellDelegate <NSObject>
+
+@optional
+- (void)filterTableViewCell:(id)sender onToggleSwitch: (BOOL)onOff;
+
+@end
+
 @interface FilterTableViewCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *Description;
-
+@property (weak, nonatomic) IBOutlet UISwitch *toggleSwitch;
+@property (weak, nonatomic) id<FilterTableViewCellDelegate> delegate;
 @end
