@@ -13,7 +13,7 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
 
 @interface FiltersViewController ()
 
-@property (nonatomic,strong) NSArray *categoriesIndexPaths;
+@property (nonatomic,strong) NSArray *extraCategoriesIndexPaths;
 @property (nonatomic,strong) NSArray *sortByIndexPaths;
 @property (nonatomic,strong) NSArray *distanceIndexPaths;
 @property (nonatomic,strong) NSMutableDictionary *numberOfRowsWhenExpanded;
@@ -59,17 +59,15 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
                             [NSIndexPath indexPathForRow:2 inSection:2],
                             [NSIndexPath indexPathForRow:3 inSection:2],
                             nil];
-    self.categoriesIndexPaths = [NSArray arrayWithObjects:
-                            [NSIndexPath indexPathForRow:1 inSection:3],
-                            [NSIndexPath indexPathForRow:2 inSection:3],
-                            [NSIndexPath indexPathForRow:3 inSection:3],
-                            [NSIndexPath indexPathForRow:4 inSection:3],
-                            [NSIndexPath indexPathForRow:5 inSection:3],
-                            [NSIndexPath indexPathForRow:6 inSection:3],
-                            [NSIndexPath indexPathForRow:7 inSection:3],
-                            [NSIndexPath indexPathForRow:8 inSection:3],
-                            [NSIndexPath indexPathForRow:9 inSection:3],
-                            nil];
+    // the fourth one is "see more"
+    self.extraCategoriesIndexPaths = [NSArray arrayWithObjects:
+                                 [NSIndexPath indexPathForRow:4 inSection:3],
+                                 [NSIndexPath indexPathForRow:5 inSection:3],
+                                 [NSIndexPath indexPathForRow:6 inSection:3],
+                                 [NSIndexPath indexPathForRow:7 inSection:3],
+                                 [NSIndexPath indexPathForRow:8 inSection:3],
+                                 [NSIndexPath indexPathForRow:9 inSection:3],
+                                 nil];
     
     //all the sections are not expanded when the view loads
     for(int i=0;i<4;i++) {
@@ -130,7 +128,12 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
         return [numRows integerValue];
     }
     else {
-        return 1;
+        if(section==3) {
+            return 4;
+        }
+        else {
+            return 1;
+        }
     }
 }
 
@@ -188,7 +191,14 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
                 name=self.optionsChosen[@"Distance"];
                 break;
             case 3:
-                name=self.optionsChosen[@"Categories"];
+                //name=self.optionsChosen[@"Categories"];
+                if(indexPath.row==3)
+                {
+                    name=@"See more..";
+                }
+                else {
+                    name=self.categoriesOptions[indexPath.row];
+                }
                 break;
         }
     }
@@ -212,7 +222,17 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
                 [self.TableView insertRowsAtIndexPaths:self.distanceIndexPaths withRowAnimation:UITableViewRowAnimationFade];
                 break;
             case 3:
-                [self.TableView insertRowsAtIndexPaths:self.categoriesIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+                if(indexPath.row==3)
+                {
+                    // delete the see more row
+                    //[self.TableView deleteRowsAtIndexPaths:self.categoriesIndexPathsToDelete withRowAnimation:UITableViewRowAnimationFade];
+                    //insert other rows
+                    [self.TableView insertRowsAtIndexPaths:self.extraCategoriesIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+                }
+                else {
+                    self.optionsChosen[@"Categories"]=[NSString stringWithFormat:@"%@",self.categoriesOptions[indexPath.row]];
+                    [self.delegate categoriesInSearch:self.optionsChosen[@"Categories"]];
+                }
                 break;
         }
     }
@@ -234,7 +254,9 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
             case 3:
                 self.optionsChosen[@"Categories"]=[NSString stringWithFormat:@"%@",self.categoriesOptions[indexPath.row]];
                 [self.delegate categoriesInSearch:self.optionsChosen[@"Categories"]];
-                [self.TableView deleteRowsAtIndexPaths:self.categoriesIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+                [self.TableView deleteRowsAtIndexPaths:self.extraCategoriesIndexPaths withRowAnimation:UITableViewRowAnimationFade];
+                // add the see more row
+                //[self.TableView insertRowsAtIndexPaths:self.categoriesIndexPathsToDelete withRowAnimation:UITableViewRowAnimationFade];
                 break;
         }
     }
@@ -244,9 +266,9 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
 
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UIView *headerView=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 60)];
+    UIView *headerView=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 30)];
     headerView.backgroundColor= [UIColor grayColor];
-    UILabel *label=[[UILabel alloc] initWithFrame:CGRectMake(30, 30, 320, 20)];
+    UILabel *label=[[UILabel alloc] initWithFrame:CGRectMake(30, 10, 320, 20)];
     switch(section) {
         case 0:
             label.text=@"Deals";
@@ -259,6 +281,9 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
             break;
         case 3:
             label.text=@"Categories";
+            //if(![self.optionsChosen[@"Categories"] isEqualToString:@""]) {
+            label.text=[label.text stringByAppendingFormat:@": %@", self.optionsChosen[@"Categories"]];
+            //}
             break;
     }
     [headerView addSubview:label];
@@ -267,7 +292,12 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 60;
+    return 30;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 45;
 }
 
 - (IBAction)onCancelButton:(id)sender {
@@ -275,7 +305,7 @@ static NSString *CellIdentifier = @"FilterTableViewCell";
 }
 
 - (IBAction)onSearchButton:(id)sender {
-    [self.delegate searchUsingFilters];
+    [self.delegate searchButtonClicked];
     [self.navigationController popViewControllerAnimated:YES];
 
 }

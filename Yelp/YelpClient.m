@@ -35,7 +35,7 @@
     parameters[@"term"]= term ;
     parameters[@"location"]=@"San Francisco";
     parameters[@"deals_filter"]=onOFF;
-    if(radius>=0) {
+    if(radius>0) {
         parameters[@"radius_filter"]=[NSString stringWithFormat:@"%d",radius];
     }
     if(category) {

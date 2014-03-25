@@ -17,7 +17,7 @@
 - (void)sortByInSearch:(NSString *)sortBy;
 - (void)distanceInSearch:(NSString *)distance;
 - (void)categoriesInSearch:(NSString *)categories;
-- (void)searchUsingFilters;
+- (void)searchButtonClicked;
 
 @end
 

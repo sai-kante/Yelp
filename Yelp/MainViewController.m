@@ -33,6 +33,8 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 @property (nonatomic,strong) UISearchBar *searchBar;
 @property (nonatomic,strong) FiltersViewController *filtersView;
 @property (nonatomic,strong) NSMutableDictionary *optionsChosen;
+@property (nonatomic,assign) BOOL searchWithFilters;
+@property (nonatomic,strong) NSMutableDictionary *categoriesYelpKeys;
 
 @end
 
@@ -94,6 +96,27 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     self.optionsChosen[@"Distance"]=@"";
     self.optionsChosen[@"Categories"]=@"";
     
+    self.categoriesYelpKeys=[[NSMutableDictionary alloc] init];
+    //@"Indian",@"Italian", @"Japanese",@"Korean",@"Mexican",
+    //@"Pizza",@"Thai", @"Seafood",@"Sushi Bars",@"Greek",nil];
+    self.categoriesYelpKeys[@"Indian"]=@"indpak";
+    self.categoriesYelpKeys[@"Italian"]=@"italian";
+    self.categoriesYelpKeys[@"Japanese"]=@"japanese";
+    self.categoriesYelpKeys[@"Korean"]=@"korean";
+    self.categoriesYelpKeys[@"Pizza"]=@"pizza";
+    self.categoriesYelpKeys[@"Thai"]=@"thai";
+    self.categoriesYelpKeys[@"Seafood"]=@"seafood";
+    self.categoriesYelpKeys[@"Sushi Bars"]=@"sushi";
+    self.categoriesYelpKeys[@"Greek"]=@"indpak";
+    self.categoriesYelpKeys[@"Mexican"]=@"mexican";
+    
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+    if(self.searchWithFilters) {
+        [self searchUsingFilters];
+        self.searchWithFilters=NO;
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -148,14 +171,6 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"CustomTableViewCell"
-//                                                          forIndexPath:indexPath];
-//    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-//    if (cell == nil) {
-//        NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"CustomTableViewCell" owner:self options:nil];
-//        cell = [nib objectAtIndex:0];
-//    }
     
     CustomTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
                                                           forIndexPath:indexPath];
@@ -225,6 +240,7 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     self.filtersView.optionsChosen[@"SortBy"]=self.optionsChosen[@"SortBy"];
     self.filtersView.optionsChosen[@"Distance"]=self.optionsChosen[@"Distance"];
     self.filtersView.optionsChosen[@"Categories"]=self.optionsChosen[@"Categories"];
+    self.searchWithFilters=NO;
     [self.navigationController pushViewController:self.filtersView animated:YES];
 }
 
@@ -279,13 +295,17 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 - (void)searchUsingFilters {
     NSString *dealsChosen=[self.optionsChosen[@"Deals"] isEqualToString:@"off"] ? @"false": @"true";
     [self.client searchWithTerm:@"Restaurant" withDeals:dealsChosen sortBy:self.optionsChosen[@"SortBy"]
-                                              inRadius:[self.optionsChosen[@"Distance"] intValue] inCategory:@"" success:^(AFHTTPRequestOperation *operation, id response) {
+                                              inRadius:[self.optionsChosen[@"Distance"] intValue] inCategory:self.categoriesYelpKeys[ self.optionsChosen[@"Categories"]] success:^(AFHTTPRequestOperation *operation, id response) {
                                                   self.businessesList=[response objectForKey:@"businesses"];
-        [self.tableView reloadData];
+           [self.tableView reloadData];
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"error: %@", [error description]);
     }];
+}
+
+- (void) searchButtonClicked {
+    self.searchWithFilters=YES;
 }
 
 @end
