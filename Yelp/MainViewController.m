@@ -30,7 +30,7 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic,strong) UISearchDisplayController *searchController;
 @property (nonatomic,strong) NSArray *businessesList;
-@property (nonatomic,strong) NSMutableDictionary *offscreenCells;
+@property (nonatomic,strong) UISearchBar *searchBar;
 
 @end
 
@@ -56,9 +56,10 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
         self.edgesForExtendedLayout = UIRectEdgeNone;
     }
     
-    UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(40.0, 0.0, 280.0, 44.0)];
-    searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    searchBar.barTintColor = [UIColor colorWithRed:255/255.0f green:74/255.0f blue:68/255.0f alpha:1.0f];
+    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(40.0, 0.0, 280.0, 44.0)];
+    self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    self.searchBar.barTintColor = [UIColor colorWithRed:255/255.0f green:74/255.0f blue:68/255.0f alpha:1.0f];
+    [[UIBarButtonItem appearanceWhenContainedIn: [UISearchBar class], nil] setTintColor:[UIColor blackColor]];
     
     UIButton *filterButton=[[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 44)];
     [filterButton addTarget:self action:@selector(onFilterButton:) forControlEvents:UIControlEventTouchUpInside];
@@ -68,9 +69,9 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     
     UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
     searchBarView.autoresizingMask = 0;
-    searchBar.delegate = self;
+    self.searchBar.delegate = self;
     [searchBarView addSubview:filterButton];
-    [searchBarView addSubview:searchBar];
+    [searchBarView addSubview:self.searchBar];
     self.navigationItem.titleView = searchBarView;
     
     UINib *customCellNib= [UINib nibWithNibName:CellIdentifier bundle:nil];
@@ -204,7 +205,6 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
 }
 
 - (IBAction)onFilterButton:(id)sender {
@@ -220,6 +220,15 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     if(searchBar.text.length>0) {
         [self searchYelpWithString:searchBar.text];
     }
+}
+
+-(void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:YES animated:YES];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar{
+    [searchBar resignFirstResponder];
+    [searchBar setShowsCancelButton:NO animated:YES];
 }
 
 
