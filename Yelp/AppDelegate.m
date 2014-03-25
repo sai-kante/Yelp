@@ -19,6 +19,7 @@
     MainViewController *myVc= [[MainViewController alloc] init];
     //FiltersViewController *fVc=[[FiltersViewController alloc] init];
     UINavigationController *uvc = [[UINavigationController alloc] initWithRootViewController:myVc];
+    uvc.navigationBar.barTintColor = [UIColor colorWithRed:255/255.0f green:74/255.0f blue:68/255.0f alpha:1.0f];
     self.window.rootViewController = uvc;
 
     self.window.backgroundColor = [UIColor whiteColor];

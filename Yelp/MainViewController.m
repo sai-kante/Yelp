@@ -58,13 +58,13 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     
     UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(40.0, 0.0, 280.0, 44.0)];
     searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    searchBar.barTintColor = [UIColor redColor];
+    searchBar.barTintColor = [UIColor colorWithRed:255/255.0f green:74/255.0f blue:68/255.0f alpha:1.0f];
     
     UIButton *filterButton=[[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 44)];
     [filterButton addTarget:self action:@selector(onFilterButton:) forControlEvents:UIControlEventTouchUpInside];
     [filterButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [filterButton setTitle:@"Filter" forState:UIControlStateNormal];
-    filterButton.backgroundColor=[UIColor redColor];
+    //filterButton.backgroundColor=[UIColor colorWithRed:255/255.0f green:74/255.0f blue:68/255.0f alpha:1.0f];
     
     UIView *searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320.0, 44.0)];
     searchBarView.autoresizingMask = 0;
@@ -145,7 +145,6 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     
     CustomTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
                                                           forIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     if (cell == nil) {
         NSArray *nib = [[NSBundle mainBundle] loadNibNamed:CellIdentifier owner:self options:nil];
         cell = [nib objectAtIndex:0];
@@ -198,9 +197,9 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
     //cell.Name.frame = CGRectMake(0, 0, size.width, size.height);
 
     NSLog(@"--%@ height: %f",name,size.height);
-    [cell.Name sizeToFit];
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
+    cell.Name.preferredMaxLayoutWidth = CGRectGetWidth(tableView.bounds);
     return cell;
 }
 
